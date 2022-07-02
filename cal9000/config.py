@@ -1,0 +1,12 @@
+class Keys:
+    QUIT = "q"
+    LEFT = "h"
+    RIGHT = "l"
+    UP = "k"
+    DOWN = "j"
+    INSERT = "i"
+    DOWN_4 = "J"
+    UP_4 = "K"
+    GO_HOME = "u"
+    HELP = "?"
+    OPEN = "o"

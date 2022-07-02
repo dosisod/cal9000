@@ -1,0 +1,76 @@
+from contextlib import contextmanager
+from typing import Any, Generator
+import termios
+
+
+__old_flags: list[Any]
+__flags: list[Any]
+
+View = Generator[str, None, None]
+
+
+def hide_cursor() -> None:
+    print("\x1b[?25l", end="")
+
+
+def show_cursor() -> None:
+    print("\x1b[?25h", end="")
+
+
+def save_cursor_pos() -> None:
+    print("\x1b[s", end="")
+
+
+def restore_cursor_pos() -> None:
+    print("\x1b[u", end="")
+
+
+def clear_line_and_below() -> None:
+    print("\x1b[J", end="")
+
+
+def setup_termios() -> None:
+    global __old_flags, __flags
+    __flags = termios.tcgetattr(0)
+    __old_flags = __flags.copy()
+    __flags[3] &= ~(termios.ICANON | termios.ECHO)
+    restore_new_termios_flags()
+
+
+def restore_old_termios_flags() -> None:
+    termios.tcsetattr(0, 0, __old_flags)
+
+
+def restore_new_termios_flags() -> None:
+    termios.tcsetattr(0, 0, __flags)
+
+
+@contextmanager
+def ui_window(full_reset: bool = False) -> Generator[None, None, None]:
+    clear_line_and_below()
+
+    if full_reset:
+        restore_old_termios_flags()
+        show_cursor()
+        yield
+        hide_cursor()
+        restore_new_termios_flags()
+
+    else:
+        yield
+
+    restore_cursor_pos()
+
+
+@contextmanager
+def root_window() -> Generator[None, None, None]:
+    setup_termios()
+    restore_new_termios_flags()
+    save_cursor_pos()
+    hide_cursor()
+
+    yield
+
+    clear_line_and_below()
+    show_cursor()
+    restore_old_termios_flags()

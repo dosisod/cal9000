@@ -1,0 +1,26 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Pip Install
+        run: pip install -r dev-requirements.txt
+
+      - name: Pytest
+        run: pytest
+
+      - name: Black
+        run: black cal9000 test -l 79 --check --diff --color
+
+      - name: Mypy
+        run: mypy -p cal9000
