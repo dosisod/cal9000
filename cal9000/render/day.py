@@ -1,21 +1,29 @@
 from datetime import datetime
+
+from cal9000.render.calendar import invert_color
 from ..io import Items, Keyboard
 from ..config import Keys
 from ..ui import View, ui_window
 
 
-def render_items_for_day(items: Items, date: datetime) -> str:
-    out = datetime.strftime(date, "%B %_d, %Y:\n\n").replace("  ", " ")
+def render_day_date_title(date: datetime) -> str:
+    return datetime.strftime(date, "%B %_d, %Y:\n").replace("  ", " ")
+
+
+def render_items_for_day(items: Items, date: datetime, index: int) -> str:
+    out = [render_day_date_title(date)]
 
     lines = items.get(date.strftime("%s"), [])
 
-    for line in lines:
-        out += f"* {line}\n"
+    for i, line in enumerate(lines):
+        bullet_point = f"* {line}"
+
+        out.append(invert_color(bullet_point) if i == index else bullet_point)
 
     if len(lines) == 0:
-        out += "nothing for today\n"
+        out.append("nothing for today")
 
-    return out
+    return "\n".join(out)
 
 
 def prompt_for_new_item() -> str:
@@ -24,9 +32,11 @@ def prompt_for_new_item() -> str:
 
 
 def items_for_day(items: Items, date: datetime, keyboard: Keyboard) -> View:
+    index = 0
+
     while True:
         with ui_window():
-            yield render_items_for_day(items, date)
+            yield render_items_for_day(items, date, index)
 
         c = keyboard()
 
@@ -36,3 +46,18 @@ def items_for_day(items: Items, date: datetime, keyboard: Keyboard) -> View:
         if c == Keys.INSERT:
             item = prompt_for_new_item()
             items[date.strftime("%s")].append(item)
+
+        elif c == Keys.UP:
+            if index > 0:
+                index -= 1
+
+        elif c == Keys.DOWN:
+            if index < len(items.get(date.strftime("%s"), [])) - 1:
+                index += 1
+
+        elif c == Keys.DELETE:
+            new_items = items[date.strftime("%s")]
+            new_items.pop(index)
+
+            if index >= len(new_items) and index != 0:
+                index -= 1

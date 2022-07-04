@@ -10,3 +10,4 @@ class Keys:
     GO_HOME = "u"
     HELP = "?"
     OPEN = "o"
+    DELETE = "x"
