@@ -29,6 +29,18 @@ def clear_line_and_below() -> None:
     print("\x1b[J", end="")
 
 
+def clear_screen() -> None:
+    print("\x1b[2J", end="")
+
+
+def cursor_set_pos(row: int = 1, col: int = 1) -> None:
+    print(f"\x1b[{row};{col}H", end="")
+
+
+def move_n_lines_up(lines: int) -> None:
+    print(f"\x1b[{lines}A", end="")
+
+
 def setup_termios() -> None:
     global __old_flags, __flags
     __flags = termios.tcgetattr(0)
@@ -43,6 +55,13 @@ def restore_old_termios_flags() -> None:
 
 def restore_new_termios_flags() -> None:
     termios.tcsetattr(0, 0, __flags)
+
+
+def ensure_n_lines_below(lines: int) -> None:
+    lines -= 1
+
+    print("\n" * lines, end="")
+    move_n_lines_up(lines)
 
 
 @contextmanager
@@ -66,6 +85,7 @@ def ui_window(full_reset: bool = False) -> Generator[None, None, None]:
 def root_window() -> Generator[None, None, None]:
     setup_termios()
     restore_new_termios_flags()
+    ensure_n_lines_below(8)
     save_cursor_pos()
     hide_cursor()
 
