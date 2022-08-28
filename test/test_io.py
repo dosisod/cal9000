@@ -1,19 +1,19 @@
+import json
 from collections import defaultdict
 from pathlib import Path
-import json
 
-from cal9000.io import DB, Items, load_save_file, save_items
 from cal9000.events import Event
+from cal9000.io import DB, Items, load_save_file, save_items
 
 
-def test_load_save_file_doesnt_exist_will_return_empty_store():
+def test_load_save_file_doesnt_exist_will_return_empty_store() -> None:
     db = load_save_file("file that doesnt exist")
 
     assert len(db.items) == 0
     assert len(db.events) == 0
 
 
-def test_load_save_file_loads_file_correctly_if_exists(tmp_path: str):
+def test_load_save_file_loads_file_correctly_if_exists(tmp_path: str) -> None:
     save_file = Path(tmp_path) / "file.json"
     save_file.write_text(
         r'{"items":{"123456":["item 1", "item 2", "item 3"]},"events":[]}'
@@ -25,7 +25,7 @@ def test_load_save_file_loads_file_correctly_if_exists(tmp_path: str):
     assert db.items == {"123456": ["item 1", "item 2", "item 3"]}
 
 
-def test_save_items(tmp_path: str):
+def test_save_items(tmp_path: str) -> None:
     save_file = Path(tmp_path) / "file.json"
 
     items = {"123": ["item 1"]}

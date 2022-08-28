@@ -1,14 +1,13 @@
 from datetime import datetime
+from test.render.util import disable_print, keyboard
 
 from cal9000.config import Keys
 from cal9000.io import DB
 from cal9000.render.calendar import invert_color
 from cal9000.render.main import main
 
-from test.render.util import disable_print, keyboard
 
-
-def test_main_show_help():
+def test_main_show_help() -> None:
     kb = keyboard([Keys.HELP, Keys.QUIT, Keys.QUIT])
     date = datetime.now()
 
@@ -19,7 +18,7 @@ def test_main_show_help():
     assert "help" in states[1]
 
 
-def test_open_day():
+def test_open_day() -> None:
     kb = keyboard([Keys.OPEN, Keys.QUIT, Keys.QUIT])
     date = datetime.now()
 
@@ -30,7 +29,7 @@ def test_open_day():
     assert "nothing for today" in states[1]
 
 
-def test_calendar_go_up_then_home():
+def test_calendar_go_up_then_home() -> None:
     kb = keyboard([Keys.UP, Keys.GO_HOME, Keys.QUIT])
     date = datetime(month=7, day=1, year=2022)
 
@@ -43,7 +42,7 @@ def test_calendar_go_up_then_home():
     assert invert_color(" 1") in states[2]
 
 
-def test_calendar_go_left():
+def test_calendar_go_left() -> None:
     kb = keyboard([Keys.LEFT, Keys.QUIT])
     date = datetime(month=7, day=2, year=2022)
 
@@ -55,7 +54,7 @@ def test_calendar_go_left():
     assert invert_color(" 1") in states[1]
 
 
-def test_calendar_go_right():
+def test_calendar_go_right() -> None:
     kb = keyboard([Keys.RIGHT, Keys.QUIT])
     date = datetime(month=7, day=1, year=2022)
 
@@ -67,7 +66,7 @@ def test_calendar_go_right():
     assert invert_color(" 2") in states[1]
 
 
-def test_calendar_go_down():
+def test_calendar_go_down() -> None:
     kb = keyboard([Keys.DOWN, Keys.QUIT])
     date = datetime(month=7, day=1, year=2022)
 
@@ -79,7 +78,7 @@ def test_calendar_go_down():
     assert invert_color(" 8") in states[1]
 
 
-def test_calendar_go_up():
+def test_calendar_go_up() -> None:
     kb = keyboard([Keys.UP, Keys.QUIT])
     date = datetime(month=7, day=8, year=2022)
 
@@ -91,7 +90,7 @@ def test_calendar_go_up():
     assert invert_color(" 1") in states[1]
 
 
-def test_calendar_go_up_4():
+def test_calendar_go_up_4() -> None:
     kb = keyboard([Keys.UP_4, Keys.QUIT])
     date = datetime(month=7, day=29, year=2022)
 
@@ -103,7 +102,7 @@ def test_calendar_go_up_4():
     assert invert_color(" 1") in states[1]
 
 
-def test_calendar_go_down_4():
+def test_calendar_go_down_4() -> None:
     kb = keyboard([Keys.DOWN_4, Keys.QUIT])
     date = datetime(month=7, day=1, year=2022)
 

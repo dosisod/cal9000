@@ -1,11 +1,10 @@
+import json
 from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable
-import json
 
 from .events import Event, MonthlyEvent
-
 
 Keyboard = Callable[[], str]
 Items = defaultdict[str, list[str]]

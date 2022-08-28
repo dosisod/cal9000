@@ -1,8 +1,9 @@
-from cal9000.render.help import show_help
 from test.render.util import disable_print, keyboard
 
+from cal9000.render.help import show_help
 
-def test_help_view():
+
+def test_help_view() -> None:
     with disable_print():
         states = list(show_help(keyboard(["any key"])))
 

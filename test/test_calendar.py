@@ -3,13 +3,13 @@ from datetime import datetime
 from cal9000.render.calendar import (
     get_calendar_grid,
     invert_color,
+    render_calendar,
     render_calendar_cell,
     render_calendar_month_title,
-    render_calendar,
 )
 
 
-def test_render_calendar_title():
+def test_render_calendar_title() -> None:
     expected = {
         1: "    January 2022    ",
         2: "    February 2022   ",
@@ -32,27 +32,27 @@ def test_render_calendar_title():
         assert got == title
 
 
-def test_invert_color():
+def test_invert_color() -> None:
     assert invert_color("hello") == "\x1b[7mhello\x1b[0m"
 
 
-def test_render_calendar_cell_empty():
+def test_render_calendar_cell_empty() -> None:
     assert render_calendar_cell(0, False) == "  "
 
 
-def test_render_calendar_single_digit():
+def test_render_calendar_single_digit() -> None:
     assert render_calendar_cell(1, False) == " 1"
 
 
-def test_render_calendar_double_digit():
+def test_render_calendar_double_digit() -> None:
     assert render_calendar_cell(12, False) == "12"
 
 
-def test_render_calendar_when_selected():
+def test_render_calendar_when_selected() -> None:
     assert render_calendar_cell(12, True) == invert_color("12")
 
 
-def test_get_calendar_grid():
+def test_get_calendar_grid() -> None:
     assert get_calendar_grid(datetime(day=1, month=7, year=2022)) == [
         [0, 0, 0, 0, 0, 1, 2],
         [3, 4, 5, 6, 7, 8, 9],
@@ -63,7 +63,7 @@ def test_get_calendar_grid():
     ]
 
 
-def test_render_calendar():
+def test_render_calendar() -> None:
     date = datetime(day=1, month=7, year=2022)
     got = render_calendar(date)
 

@@ -1,9 +1,10 @@
 from datetime import datetime
-from cal9000.events import MonthlyEvent
 
+from cal9000.events import MonthlyEvent
 from cal9000.render.calendar import invert_color
-from ..io import Keyboard, DB
+
 from ..config import Keys
+from ..io import DB, Keyboard
 from ..ui import View, ui_window
 
 

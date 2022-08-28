@@ -1,7 +1,7 @@
-from cal9000.io import DB, Keyboard
 from cal9000.config import Keys
-from cal9000.ui import View, ui_window
 from cal9000.events import Event, MonthlyEvent
+from cal9000.io import DB, Keyboard
+from cal9000.ui import View, ui_window
 
 
 def interval_to_int(s: str) -> int:

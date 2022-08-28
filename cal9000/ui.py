@@ -1,7 +1,6 @@
+import termios
 from contextlib import contextmanager
 from typing import Any, Generator
-import termios
-
 
 __old_flags: list[Any]
 __flags: list[Any]
@@ -50,10 +49,12 @@ def setup_termios() -> None:
 
 
 def restore_old_termios_flags() -> None:
+    global __old_flags
     termios.tcsetattr(0, 0, __old_flags)
 
 
 def restore_new_termios_flags() -> None:
+    global __old_flags, __flags
     termios.tcsetattr(0, 0, __flags)
 
 

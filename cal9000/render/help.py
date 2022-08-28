@@ -1,5 +1,5 @@
-from ..ui import View, ui_window
 from ..io import Keyboard
+from ..ui import View, ui_window
 
 
 def show_help(keyboard: Keyboard) -> View:

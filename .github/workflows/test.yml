@@ -14,13 +14,13 @@ jobs:
           python-version: '3.10'
 
       - name: Pip Install
-        run: pip install -r dev-requirements.txt
+        run: make install
 
       - name: Pytest
-        run: pytest
+        run: make test
 
-      - name: Black
-        run: black cal9000 test -l 79 --check --diff --color
+      - name: Lint
+        run: make lint
 
       - name: Mypy
-        run: mypy -p cal9000
+        run: make mypy

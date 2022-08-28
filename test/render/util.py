@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from typing import Iterator
 from unittest.mock import patch
 
 
@@ -13,7 +14,7 @@ class keyboard:
 
 
 @contextmanager
-def disable_print():
+def disable_print() -> Iterator[None]:
     with (
         patch("builtins.print"),
         patch("cal9000.ui.restore_old_termios_flags"),

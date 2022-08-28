@@ -1,14 +1,15 @@
 from datetime import datetime
 from unittest.mock import patch
+
+from cal9000.config import Keys
 from cal9000.io import DB, Items
 from cal9000.render.calendar import invert_color
-
 from cal9000.render.day import items_for_day, render_items_for_day
-from cal9000.config import Keys
+
 from .util import disable_print, keyboard
 
 
-def test_render_items_for_day_when_there_are_no_items():
+def test_render_items_for_day_when_there_are_no_items() -> None:
     got = render_items_for_day(DB(), datetime(month=7, day=1, year=2022), 0)
 
     expected = """\
@@ -19,7 +20,7 @@ nothing for today"""
     assert expected == got
 
 
-def test_render_items_for_day():
+def test_render_items_for_day() -> None:
     date = datetime(month=7, day=1, year=2022)
     items = {date.strftime("%s"): ["item 1", "item 2"]}
 
@@ -34,7 +35,7 @@ July 1, 2022:
     assert expected == got
 
 
-def test_quit_closes_view():
+def test_quit_closes_view() -> None:
     with disable_print():
         kb = keyboard([Keys.QUIT])
         states = list(items_for_day(DB(), datetime.now(), kb))
@@ -42,7 +43,7 @@ def test_quit_closes_view():
     assert len(states) == 1
 
 
-def test_any_other_key_just_redraws():
+def test_any_other_key_just_redraws() -> None:
     kb = keyboard(
         [
             "some",
@@ -60,7 +61,7 @@ def test_any_other_key_just_redraws():
     assert len(states) == 6
 
 
-def test_insert_item_into_day():
+def test_insert_item_into_day() -> None:
     item = "item 1"
     kb = keyboard([Keys.INSERT, Keys.QUIT])
 
@@ -75,7 +76,7 @@ def test_insert_item_into_day():
     assert item in states[1]
 
 
-def test_move_up_and_down_in_item_list():
+def test_move_up_and_down_in_item_list() -> None:
     kb = keyboard(
         [Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.UP, Keys.UP, Keys.UP, Keys.QUIT]
     )
@@ -97,7 +98,7 @@ def test_move_up_and_down_in_item_list():
     assert invert_color("* item 1") in states[6]
 
 
-def test_delete_item():
+def test_delete_item() -> None:
     kb = keyboard([Keys.DELETE, Keys.QUIT])
     date = datetime.now()
     items = {date.strftime("%s"): ["item 1"]}

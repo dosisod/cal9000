@@ -1,6 +1,5 @@
-from datetime import datetime
 import calendar
-
+from datetime import datetime
 
 DAYS_OF_WEEK_HEADER = "Su Mo Tu We Th Fr Sa"
 

@@ -1,0 +1,4 @@
+[flake8]
+exclude = .git,__pycache__,.venv
+per-file-ignores =
+    test/test_calendar.py:W291
