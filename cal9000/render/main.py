@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta
 
 from ..config import Keys
+from ..events import Event
+from ..io import DB, Keyboard
 from ..ui import View, ui_window
-from ..io import Keyboard, Items
 from .calendar import render_calendar
-from .help import show_help
 from .day import items_for_day
+from .event_manager import recurring_event_manager
+from .help import show_help
+
 
 # TODO: allow user to change these keybindings
 DAY_DIFF = {
@@ -18,8 +21,9 @@ DAY_DIFF = {
 }
 
 
-def main(date: datetime, items: Items, keyboard: Keyboard) -> View:
+def main(date: datetime, db: DB, keyboard: Keyboard) -> View:
     start_date = date
+    events: list[Event] = []
 
     while True:
         with ui_window():
@@ -40,4 +44,7 @@ def main(date: datetime, items: Items, keyboard: Keyboard) -> View:
             yield from show_help(keyboard)
 
         elif c == Keys.OPEN:
-            yield from items_for_day(items, date, keyboard)
+            yield from items_for_day(db, date, keyboard)
+
+        elif c == Keys.GOTO_EVENTS:
+            yield from recurring_event_manager(db, keyboard)

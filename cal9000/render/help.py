@@ -18,6 +18,7 @@ u\tgo to current day
 o\topen selected day
 ?\topen this menu
 i\tinsert item
+g\tgoto recurring event manager
 """
 
     keyboard()

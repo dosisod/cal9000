@@ -11,7 +11,7 @@ from cal9000.ui import (
 )
 
 
-items = load_save_file()
+db = load_save_file()
 date = get_today_date_only()
 
 
@@ -27,7 +27,7 @@ def keyboard() -> str:
 
 
 with root_window():
-    for draw in main(date, items, keyboard):
+    for draw in main(date, db, keyboard):
         print(draw, end="")
 
-save_items(items)
+save_items(db)

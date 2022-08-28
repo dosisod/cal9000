@@ -1,6 +1,6 @@
-from collections import defaultdict
 from datetime import datetime
 from unittest.mock import patch
+from cal9000.io import DB, Items
 from cal9000.render.calendar import invert_color
 
 from cal9000.render.day import items_for_day, render_items_for_day
@@ -9,9 +9,7 @@ from .util import disable_print, keyboard
 
 
 def test_render_items_for_day_when_there_are_no_items():
-    got = render_items_for_day(
-        defaultdict(), datetime(month=7, day=1, year=2022), 0
-    )
+    got = render_items_for_day(DB(), datetime(month=7, day=1, year=2022), 0)
 
     expected = """\
 July 1, 2022:
@@ -25,7 +23,7 @@ def test_render_items_for_day():
     date = datetime(month=7, day=1, year=2022)
     items = {date.strftime("%s"): ["item 1", "item 2"]}
 
-    got = render_items_for_day(defaultdict(list, items), date, 0)
+    got = render_items_for_day(DB(items=Items(list, items)), date, 0)
 
     expected = f"""\
 July 1, 2022:
@@ -39,7 +37,7 @@ July 1, 2022:
 def test_quit_closes_view():
     with disable_print():
         kb = keyboard([Keys.QUIT])
-        states = list(items_for_day(defaultdict(), datetime.now(), kb))
+        states = list(items_for_day(DB(), datetime.now(), kb))
 
     assert len(states) == 1
 
@@ -57,7 +55,7 @@ def test_any_other_key_just_redraws():
     )
 
     with disable_print():
-        states = list(items_for_day(defaultdict(), datetime.now(), kb))
+        states = list(items_for_day(DB(), datetime.now(), kb))
 
     assert len(states) == 6
 
@@ -68,7 +66,8 @@ def test_insert_item_into_day():
 
     with disable_print():
         with patch("builtins.input", lambda _: item):
-            states = list(items_for_day(defaultdict(list), datetime.now(), kb))
+            db = DB(items=Items(list))
+            states = list(items_for_day(db, datetime.now(), kb))
 
     assert len(states) == 2
 
@@ -84,7 +83,8 @@ def test_move_up_and_down_in_item_list():
     items = {date.strftime("%s"): ["item 1", "item 2", "item 3"]}
 
     with disable_print():
-        states = list(items_for_day(defaultdict(list, items), date, kb))
+        db = DB(items=Items(list, items))
+        states = list(items_for_day(db, date, kb))
 
     assert len(states) == 7
 
@@ -103,7 +103,8 @@ def test_delete_item():
     items = {date.strftime("%s"): ["item 1"]}
 
     with disable_print():
-        states = list(items_for_day(defaultdict(list, items), date, kb))
+        db = DB(items=Items(list, items))
+        states = list(items_for_day(db, date, kb))
 
     assert len(states) == 2
 

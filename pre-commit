@@ -2,6 +2,6 @@
 
 set -e
 
+mypy -p cal9000
 pytest
 black cal9000 test -l 79 --check --diff --color
-mypy -p cal9000

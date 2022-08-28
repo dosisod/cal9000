@@ -1,26 +1,58 @@
 from collections import defaultdict
-from contextlib import suppress
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 import json
+
+from .events import Event, MonthlyEvent
 
 
 Keyboard = Callable[[], str]
+Items = defaultdict[str, list[str]]
 
 DEFAULT_CONFIG_FILE = "~/.local/share/cal9000.json"
 
-Items = defaultdict[str, list[str]]
+
+@dataclass
+class DB:
+    items: Items = field(default_factory=Items)
+    events: list[Event] = field(default_factory=list)
+
+    def to_json(self) -> Any:
+        return {
+            "items": dict(self.items),
+            "events": [asdict(e) for e in self.events],
+        }
 
 
-def load_save_file(filename: str = DEFAULT_CONFIG_FILE) -> Items:
-    items = {}
+def load_save_file(filename: str = DEFAULT_CONFIG_FILE) -> DB:
+    try:
+        data = json.loads(Path(filename).expanduser().read_text())
 
-    with suppress(FileNotFoundError):
-        items = json.loads(Path(filename).expanduser().read_text())
+        items = data["items"]
+        events = data["events"]
 
-    return defaultdict(list, items)
+    except (FileNotFoundError, KeyError):
+        items = {}
+        events = []
+
+    def convert_event_from_json(event: list[Any]) -> Event:
+        match event:
+            case {"title": title, "day": day}:
+                return MonthlyEvent(title=title, day=day)
+
+            case {"title": title}:
+                return Event(title=title)
+
+            case _:
+                raise ValueError("invalid event")
+
+    return DB(
+        items=Items(list, items),
+        events=[convert_event_from_json(e) for e in events],
+    )
 
 
-def save_items(items: Items, filename: str = DEFAULT_CONFIG_FILE) -> None:
+def save_items(db: DB, filename: str = DEFAULT_CONFIG_FILE) -> None:
     with Path(filename).expanduser().open("w+") as f:
-        f.write(json.dumps(items))
+        f.write(json.dumps(db.to_json()))

@@ -11,3 +11,4 @@ class Keys:
     HELP = "?"
     OPEN = "o"
     DELETE = "x"
+    GOTO_EVENTS = "g"

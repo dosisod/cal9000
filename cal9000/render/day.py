@@ -1,7 +1,8 @@
 from datetime import datetime
+from cal9000.events import MonthlyEvent
 
 from cal9000.render.calendar import invert_color
-from ..io import Items, Keyboard
+from ..io import Keyboard, DB
 from ..config import Keys
 from ..ui import View, ui_window
 
@@ -10,17 +11,28 @@ def render_day_date_title(date: datetime) -> str:
     return datetime.strftime(date, "%B %_d, %Y:\n").replace("  ", " ")
 
 
-def render_items_for_day(items: Items, date: datetime, index: int) -> str:
+def get_items_for_day(db: DB, date: datetime) -> list[str]:
+    lines = []
+
+    for event in db.events:
+        match event:
+            case MonthlyEvent(title=t, day=d) if d == date.day:
+                lines.append(f"{t} ({d} of every month)")
+
+    return lines + db.items.get(date.strftime("%s"), [])
+
+
+def render_items_for_day(db: DB, date: datetime, index: int) -> str:
     out = [render_day_date_title(date)]
 
-    lines = items.get(date.strftime("%s"), [])
+    items = get_items_for_day(db, date)
 
-    for i, line in enumerate(lines):
+    for i, line in enumerate(items):
         bullet_point = f"* {line}"
 
         out.append(invert_color(bullet_point) if i == index else bullet_point)
 
-    if len(lines) == 0:
+    if len(items) == 0:
         out.append("nothing for today")
 
     return "\n".join(out)
@@ -31,12 +43,12 @@ def prompt_for_new_item() -> str:
         return input("> ")
 
 
-def items_for_day(items: Items, date: datetime, keyboard: Keyboard) -> View:
+def items_for_day(db: DB, date: datetime, keyboard: Keyboard) -> View:
     index = 0
 
     while True:
         with ui_window():
-            yield render_items_for_day(items, date, index)
+            yield render_items_for_day(db, date, index)
 
         c = keyboard()
 
@@ -45,19 +57,29 @@ def items_for_day(items: Items, date: datetime, keyboard: Keyboard) -> View:
 
         if c == Keys.INSERT:
             item = prompt_for_new_item()
-            items[date.strftime("%s")].append(item)
+            db.items[date.strftime("%s")].append(item)
 
         elif c == Keys.UP:
             if index > 0:
                 index -= 1
 
         elif c == Keys.DOWN:
-            if index < len(items.get(date.strftime("%s"), [])) - 1:
+            if index < len(get_items_for_day(db, date)) - 1:
                 index += 1
 
         elif c == Keys.DELETE:
-            new_items = items[date.strftime("%s")]
-            new_items.pop(index)
+            daily_items = db.items[date.strftime("%s")]
 
-            if index >= len(new_items) and index != 0:
-                index -= 1
+            if len(daily_items) == 0:
+                continue
+
+            all_items = get_items_for_day(db, date)
+            deleteable_indexes = len(all_items) - len(daily_items)
+
+            if index >= deleteable_indexes:
+                daily_items.pop(index - deleteable_indexes)
+
+                if (index - deleteable_indexes) >= len(
+                    daily_items
+                ) and index != 0:
+                    index -= 1
