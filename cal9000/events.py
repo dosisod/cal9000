@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from cal9000.dates import WEEK_DAY_NAMES
+
 
 # From: https://stackoverflow.com/a/52045942
 def day_suffix(day: int) -> str:
@@ -27,3 +29,13 @@ class MonthlyEvent(Event):
         suffix = day_suffix(self.day)
 
         return f"{self.title} ({self.day}{suffix} of every month)"
+
+
+@dataclass
+class WeeklyEvent(Event):
+    weekday: int
+
+    def __str__(self) -> str:
+        weekday = WEEK_DAY_NAMES[self.weekday].title()
+
+        return f"{self.title} (every {weekday})"

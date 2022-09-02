@@ -1,5 +1,6 @@
 from cal9000.config import Keys
-from cal9000.events import Event, MonthlyEvent
+from cal9000.dates import WEEK_DAY_NAMES
+from cal9000.events import Event, MonthlyEvent, WeeklyEvent
 from cal9000.io import DB, Keyboard
 from cal9000.ui import View, ui_window
 
@@ -38,3 +39,13 @@ def recurring_event_manager(db: DB, keyboard: Keyboard) -> View:
                     db.events.append(
                         MonthlyEvent(comment, interval_to_int(interval))
                     )
+
+                case ["every", day, "#", *rest] | [day, "#", *rest]:
+                    comment = " ".join(rest)
+
+                    try:
+                        weekday = WEEK_DAY_NAMES.index(day.lower())
+
+                        db.events.append(WeeklyEvent(comment, weekday))
+                    except ValueError:
+                        pass

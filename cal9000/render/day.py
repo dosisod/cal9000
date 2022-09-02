@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from cal9000.events import MonthlyEvent
+from cal9000.events import MonthlyEvent, WeeklyEvent
 from cal9000.render.calendar import invert_color
 
 from ..config import Keys
@@ -17,8 +17,11 @@ def get_items_for_day(db: DB, date: datetime) -> list[str]:
 
     for event in db.events:
         match event:
-            case MonthlyEvent(title=t, day=d) if d == date.day:
-                lines.append(f"{t} ({d} of every month)")
+            case MonthlyEvent(day=d) if d == date.day:
+                lines.append(str(event))
+
+            case WeeklyEvent(weekday=d) if d == (date.isoweekday() % 7):
+                lines.append(str(event))
 
     return lines + db.items.get(date.strftime("%s"), [])
 
