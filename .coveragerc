@@ -1,0 +1,7 @@
+[run]
+# TODO: enable this
+# branch = true
+
+omit =
+    cal9000/ui.py
+    cal9000/__main__.py

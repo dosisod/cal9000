@@ -2,7 +2,9 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from cal9000.events import Event
+from pytest import raises
+
+from cal9000.events import Event, MonthlyEvent, WeeklyEvent
 from cal9000.io import DB, Items, load_save_file, save_items
 
 
@@ -23,6 +25,40 @@ def test_load_save_file_loads_file_correctly_if_exists(tmp_path: str) -> None:
 
     assert isinstance(db.items, defaultdict)
     assert db.items == {"123456": ["item 1", "item 2", "item 3"]}
+
+
+def test_load_save_file_save_events(tmp_path: str) -> None:
+    save_file = Path(tmp_path) / "file.json"
+    save_file.write_text(
+        json.dumps(
+            {
+                "items": {},
+                "events": [
+                    {"title": "some monthly event", "day": 1},
+                    {"title": "some weekly event", "weekday": 6},
+                    {"title": "some normal event"},
+                ],
+            }
+        )
+    )
+
+    db = load_save_file(str(save_file))
+
+    assert db.events == [
+        MonthlyEvent(title="some monthly event", day=1),
+        WeeklyEvent(title="some weekly event", weekday=6),
+        Event(title="some normal event"),
+    ]
+
+
+def test_load_save_file_fails_on_invalid_event(tmp_path: str) -> None:
+    save_file = Path(tmp_path) / "file.json"
+    save_file.write_text(
+        json.dumps({"items": {}, "events": [{"invalid": "data"}]})
+    )
+
+    with raises(ValueError, match="invalid event"):
+        load_save_file(str(save_file))
 
 
 def test_save_items(tmp_path: str) -> None:

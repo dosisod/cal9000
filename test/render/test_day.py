@@ -2,6 +2,7 @@ from datetime import datetime
 from unittest.mock import patch
 
 from cal9000.config import Keys
+from cal9000.events import MonthlyEvent, WeeklyEvent
 from cal9000.io import DB, Items
 from cal9000.render.calendar import invert_color
 from cal9000.render.day import items_for_day, render_items_for_day
@@ -113,3 +114,59 @@ def test_delete_item() -> None:
     assert "* item 1" not in states[1]
 
     assert len(items[date.strftime("%s")]) == 0
+
+
+def test_delete_item_when_there_are_no_more_items_does_nothing() -> None:
+    kb = keyboard([Keys.DELETE, Keys.QUIT])
+    date = datetime.now()
+    items: dict[str, list[str]] = {date.strftime("%s"): []}
+
+    with disable_print():
+        states = list(items_for_day(DB(items=Items(list, items)), date, kb))
+
+    assert len(states) == 2
+    assert items[date.strftime("%s")] == []
+
+
+def test_delete_last_item_moves_to_next_item() -> None:
+    kb = keyboard([Keys.DOWN, Keys.DELETE, Keys.QUIT])
+    date = datetime.now()
+    items: dict[str, list[str]] = {date.strftime("%s"): ["x", "y"]}
+
+    with disable_print():
+        states = list(items_for_day(DB(items=Items(list, items)), date, kb))
+
+    assert len(states) == 3
+    assert items[date.strftime("%s")] == ["x"]
+
+
+def test_items_are_added_if_monthly_event_lands_on_today() -> None:
+    event = MonthlyEvent(title="some_title", day=1)
+    db = DB(events=[event])
+
+    render = render_items_for_day(db, datetime(month=7, day=1, year=2022), 0)
+
+    assert str(event) in render
+
+
+def test_items_are_added_if_weekly_event_lands_on_today() -> None:
+    event = WeeklyEvent(title="some_title", weekday=0)
+    db = DB(events=[event])
+
+    # a day that happens to be a sunday
+    sunday = datetime(month=9, day=4, year=2022)
+
+    render = render_items_for_day(db, sunday, 0)
+
+    assert str(event) in render
+
+
+def test_no_items_added_if_no_events_match_today() -> None:
+    monthly_event = MonthlyEvent(title="some_title", day=1)
+    weekly_event = WeeklyEvent(title="some_title", weekday=0)
+    db = DB(events=[weekly_event, monthly_event])
+
+    render = render_items_for_day(db, datetime(month=9, day=8, year=2022), 0)
+
+    assert str(monthly_event) not in render
+    assert str(weekly_event) not in render

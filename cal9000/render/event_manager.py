@@ -34,6 +34,7 @@ def recurring_event_manager(db: DB, keyboard: Keyboard) -> View:
                 event = input("> ")
 
             match event.lower().split():
+                # TODO: move logic to the event itself
                 case [interval, "of", "every" | "the", "month", "#", *rest]:
                     comment = " ".join(rest)
                     db.events.append(

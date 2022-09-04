@@ -16,6 +16,7 @@ def get_items_for_day(db: DB, date: datetime) -> list[str]:
     lines = []
 
     for event in db.events:
+        # TODO: move this logic to the event itself
         match event:
             case MonthlyEvent(day=d) if d == date.day:
                 lines.append(str(event))

@@ -112,3 +112,13 @@ def test_calendar_go_down_4() -> None:
     assert len(states) == 2
     assert invert_color(" 1") in states[0]
     assert invert_color("29") in states[1]
+
+
+def test_go_to_event_manager() -> None:
+    kb = keyboard([Keys.GOTO_EVENTS, Keys.QUIT, Keys.QUIT])
+
+    with disable_print():
+        states = list(main(datetime.now(), DB(), kb))
+
+    assert len(states) == 3
+    assert "Recurring events" in states[1]
