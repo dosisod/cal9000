@@ -5,7 +5,10 @@ all: lint mypy test
 install:
 	pip install -r dev-requirements.txt
 
-lint: black isort
+lint: flake8 black isort
+
+flake8:
+	flake8
 
 black:
 	black cal9000 test -l 79 --check --diff --color

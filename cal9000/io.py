@@ -17,7 +17,7 @@ class DB:
     items: Items = field(default_factory=Items)
     events: list[Event] = field(default_factory=list)
 
-    def to_json(self) -> Any:
+    def to_json(self) -> dict[str, Any]:  # type: ignore
         return {
             "items": dict(self.items),
             "events": [asdict(e) for e in self.events],
@@ -35,15 +35,15 @@ def load_save_file(filename: str = DEFAULT_CONFIG_FILE) -> DB:
         items = {}
         events = []
 
-    def convert_event_from_json(event: list[Any]) -> Event:
+    def convert_event_from_json(event: dict[str, str | int]) -> Event:
         match event:
-            case {"title": title, "day": day}:
+            case {"title": str(title), "day": int(day)}:
                 return MonthlyEvent(title, day)
 
-            case {"title": title, "weekday": weekday}:
+            case {"title": str(title), "weekday": int(weekday)}:
                 return WeeklyEvent(title, weekday)
 
-            case {"title": title}:
+            case {"title": str(title)}:
                 return Event(title)
 
             case _:

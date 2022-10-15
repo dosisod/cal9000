@@ -20,6 +20,28 @@ isort = "^5.10.1"
 mypy = "^0.971"
 pytest = "^7.1.2"
 
+[tool.coverage.run]
+# TODO: enable this
+# branch = true
+
+omit = [
+  "cal9000/ui.py",
+  "cal9000/__main__.py",
+]
+
+[tool.mypy]
+strict = true
+namespace_packages = true
+disallow_any_decorated = true
+disallow_any_explicit = true
+disallow_any_unimported = true
+warn_unreachable = true
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+color_output = true
+
 [tool.poetry.scripts]
 cal9000 = "cal9000.__main__:main"
 

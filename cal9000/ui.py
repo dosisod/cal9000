@@ -2,8 +2,8 @@ import termios
 from contextlib import contextmanager
 from typing import Any, Generator
 
-__old_flags: list[Any]
-__flags: list[Any]
+__old_flags: list[Any]  # type: ignore
+__flags: list[Any]  # type: ignore
 
 View = Generator[str, None, None]
 
