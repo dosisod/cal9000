@@ -18,4 +18,4 @@ mypy:
 	mypy -p test
 
 test:
-	pytest --cov=cal9000 --cov-report=html --cov-report=term-missing --cov-fail-under=80
+	pytest --cov=cal9000 --cov-report=html --cov-report=term-missing --cov-fail-under=100

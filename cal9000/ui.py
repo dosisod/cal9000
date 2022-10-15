@@ -86,7 +86,7 @@ def ui_window(full_reset: bool = False) -> Generator[None, None, None]:
 def root_window() -> Generator[None, None, None]:
     setup_termios()
     restore_new_termios_flags()
-    ensure_n_lines_below(8)
+    ensure_n_lines_below(9)
     save_cursor_pos()
     hide_cursor()
 

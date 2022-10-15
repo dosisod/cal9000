@@ -15,7 +15,7 @@ def test_main_show_help() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 3
-    assert "help" in states[1]
+    assert "General help" in states[1]
 
 
 def test_open_day() -> None:
@@ -122,3 +122,46 @@ def test_go_to_event_manager() -> None:
 
     assert len(states) == 3
     assert "Recurring events" in states[1]
+
+
+def command(cmd: str) -> list[str]:
+    return list(f":{cmd}\n")
+
+
+def test_help_command() -> None:
+    for cmd in ("help", "h"):
+        kb = keyboard(command(cmd) + ["\n", Keys.QUIT])
+
+        with disable_print():
+            states = list(main(datetime.now(), DB(), kb))
+
+        assert "General help" in states[-2]
+
+
+def test_goto_day_command() -> None:
+    date = datetime(month=10, day=14, year=2022)
+    kb = keyboard(command("15") + [Keys.QUIT])
+
+    with disable_print():
+        states = list(main(date, DB(), kb))
+
+    assert invert_color("15") in states[-1]
+
+
+def test_apply_verb_count() -> None:
+    date = datetime(month=10, day=14, year=2022)
+    kb = keyboard(list("4h\n") + [Keys.QUIT])
+
+    with disable_print():
+        states = list(main(date, DB(), kb))
+
+    assert invert_color("10") in states[-1]
+
+
+def test_command_bar_displayed_when_cmd_is_active() -> None:
+    kb = keyboard(command("xyz") + [Keys.QUIT])
+
+    with disable_print():
+        states = list(main(datetime.now(), DB(), kb))
+
+    assert ":xyz" in states[-2]

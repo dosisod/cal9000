@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from ..command_bar import CommandBar
 from ..config import Keys
 from ..io import DB, Keyboard
 from ..ui import View, ui_window
@@ -21,18 +22,34 @@ DAY_DIFF = {
 
 def main(date: datetime, db: DB, keyboard: Keyboard) -> View:
     start_date = date
+    cmd_bar = CommandBar(20)
 
     while True:
         with ui_window():
-            yield render_calendar(date)
+            calendar = render_calendar(date)
+
+            if bar := str(cmd_bar):
+                calendar = f"{calendar}\n{bar}"
+
+            yield calendar
 
         c = keyboard()
+
+        if c == "\n":
+            if cmd_bar.command in (":help", ":h"):
+                yield from show_help(keyboard)
+
+            if (day := cmd_bar.command[1:]).isdigit():
+                date = date.replace(day=int(day))
+
+        elif cmd_bar.append(c):
+            continue
 
         if c == Keys.QUIT:
             break
 
         if days := DAY_DIFF.get(c):
-            date += timedelta(days=days)
+            date += timedelta(days=days) * (cmd_bar.count or 1)
 
         elif c == Keys.GO_HOME:
             date = start_date
@@ -45,3 +62,5 @@ def main(date: datetime, db: DB, keyboard: Keyboard) -> View:
 
         elif c == Keys.GOTO_EVENTS:
             yield from recurring_event_manager(db, keyboard)
+
+        cmd_bar.reset()
