@@ -165,3 +165,11 @@ def test_command_bar_displayed_when_cmd_is_active() -> None:
         states = list(main(datetime.now(), DB(), kb))
 
     assert ":xyz" in states[-2]
+
+
+def test_quit_command() -> None:
+    for cmd in ("quit", "q"):
+        kb = keyboard(command(cmd))
+
+        with disable_print():
+            list(main(datetime.now(), DB(), kb))

@@ -39,7 +39,10 @@ def main(date: datetime, db: DB, keyboard: Keyboard) -> View:
             if cmd_bar.command in (":help", ":h"):
                 yield from show_help(keyboard)
 
-            if (day := cmd_bar.command[1:]).isdigit():
+            elif cmd_bar.command in (":quit", ":q"):
+                break
+
+            elif (day := cmd_bar.command[1:]).isdigit():
                 date = date.replace(day=int(day))
 
         elif cmd_bar.append(c):
