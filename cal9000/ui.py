@@ -90,8 +90,13 @@ def root_window() -> Generator[None, None, None]:
     save_cursor_pos()
     hide_cursor()
 
-    yield
+    try:
+        yield
 
-    clear_line_and_below()
-    show_cursor()
-    restore_old_termios_flags()
+    except KeyboardInterrupt:
+        pass
+
+    finally:
+        clear_line_and_below()
+        show_cursor()
+        restore_old_termios_flags()
