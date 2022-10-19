@@ -1,24 +1,25 @@
+from ..config import Keys
 from ..io import Keyboard
 from ..ui import View, ui_window
 
 
 def show_help(keyboard: Keyboard) -> View:
     with ui_window():
-        yield """\
+        yield f"""\
 General help:
 
-q\tquit
-h\tprevious day
-l\tnext day
-j\tdown 1 row
-J\tdown 4 rows
-k\tup 1 row
-K\tup 4 rows
-u\tgo to current day
-o\topen selected day
-?\topen this menu
-i\tinsert item
-g\tgoto recurring event manager
+{Keys.QUIT}\tquit
+{Keys.LEFT}\tprevious day
+{Keys.RIGHT}\tnext day
+{Keys.DOWN}\tdown 1 row
+{Keys.DOWN_4}\tdown 4 rows
+{Keys.UP}\tup 1 row
+{Keys.UP_4}\tup 4 rows
+{Keys.GO_HOME}\tgo to current day
+{Keys.OPEN}\topen selected day
+{Keys.HELP}\topen this menu
+{Keys.INSERT}\tinsert item
+{Keys.GOTO_EVENTS}\tgoto recurring event manager
 """
 
     keyboard()
