@@ -1,4 +1,5 @@
 import sys
+from importlib import metadata
 
 from cal9000.date import get_today_date_only
 from cal9000.io import load_save_file, save_items
@@ -12,6 +13,14 @@ from cal9000.ui import (
 
 
 def main() -> None:
+    for arg in sys.argv[1:]:
+        if arg in ("-v", "--version"):
+            version = metadata.version("cal9000")
+
+            print(f"cal9000 v{version}")
+
+            return
+
     db = load_save_file()
     date = get_today_date_only()
 
