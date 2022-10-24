@@ -3,6 +3,7 @@ from importlib import metadata
 
 from cal9000.date import get_today_date_only
 from cal9000.io import load_save_file, save_items
+from cal9000.render.help import help_message
 from cal9000.render.main import main as ui_main
 from cal9000.ui import (
     clear_screen,
@@ -18,6 +19,14 @@ def main() -> None:
             version = metadata.version("cal9000")
 
             print(f"cal9000 v{version}")
+
+            return
+
+        if arg in ("-h", "--help"):
+            msg = "usage: cal9000 [-v | --version] [-h | --help]\n\n"
+            msg += help_message()
+
+            print(msg)
 
             return
 

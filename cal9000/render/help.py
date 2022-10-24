@@ -3,9 +3,8 @@ from ..io import Keyboard
 from ..ui import View, ui_window
 
 
-def show_help(keyboard: Keyboard) -> View:
-    with ui_window():
-        yield f"""\
+def help_message() -> str:
+    return f"""\
 General help:
 
 {Keys.QUIT}\tquit
@@ -21,5 +20,10 @@ General help:
 {Keys.INSERT}\tinsert item
 {Keys.GOTO_EVENTS}\tgoto recurring event manager
 """
+
+
+def show_help(keyboard: Keyboard) -> View:
+    with ui_window():
+        yield help_message()
 
     keyboard()
