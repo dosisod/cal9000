@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from cal9000.events import MonthlyEvent, WeeklyEvent
-from cal9000.render.calendar import invert_color
+from cal9000.config import Colors
 
 from ..config import Keys
 from ..io import DB, Keyboard
@@ -13,16 +12,7 @@ def render_day_date_title(date: datetime) -> str:
 
 
 def get_items_for_day(db: DB, date: datetime) -> list[str]:
-    lines = []
-
-    for event in db.events:
-        # TODO: move this logic to the event itself
-        match event:
-            case MonthlyEvent(day=d) if d == date.day:
-                lines.append(str(event))
-
-            case WeeklyEvent(weekday=d) if d == (date.isoweekday() % 7):
-                lines.append(str(event))
+    lines = [str(event) for event in db.events if event.is_on_date(date)]
 
     return lines + db.items.get(date.strftime("%s"), [])
 
@@ -35,7 +25,11 @@ def render_items_for_day(db: DB, date: datetime, index: int) -> str:
     for i, line in enumerate(items):
         bullet_point = f"* {line}"
 
-        out.append(invert_color(bullet_point) if i == index else bullet_point)
+        out.append(
+            Colors.SELECTED.colorize(bullet_point)
+            if i == index
+            else bullet_point
+        )
 
     if len(items) == 0:
         out.append("nothing for today")

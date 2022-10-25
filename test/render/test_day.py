@@ -1,10 +1,9 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from cal9000.config import Keys
+from cal9000.config import Colors, Keys
 from cal9000.events import MonthlyEvent, WeeklyEvent
 from cal9000.io import DB, Items
-from cal9000.render.calendar import invert_color
 from cal9000.render.day import items_for_day, render_items_for_day
 
 from .util import disable_print, keyboard
@@ -30,7 +29,7 @@ def test_render_items_for_day() -> None:
     expected = f"""\
 July 1, 2022:
 
-{invert_color('* item 1')}
+{Colors.SELECTED.colorize('* item 1')}
 * item 2"""
 
     assert expected == got
@@ -90,13 +89,13 @@ def test_move_up_and_down_in_item_list() -> None:
 
     assert len(states) == 7
 
-    assert invert_color("* item 1") in states[0]
-    assert invert_color("* item 2") in states[1]
-    assert invert_color("* item 3") in states[2]
-    assert invert_color("* item 3") in states[3]
-    assert invert_color("* item 2") in states[4]
-    assert invert_color("* item 1") in states[5]
-    assert invert_color("* item 1") in states[6]
+    assert Colors.SELECTED.colorize("* item 1") in states[0]
+    assert Colors.SELECTED.colorize("* item 2") in states[1]
+    assert Colors.SELECTED.colorize("* item 3") in states[2]
+    assert Colors.SELECTED.colorize("* item 3") in states[3]
+    assert Colors.SELECTED.colorize("* item 2") in states[4]
+    assert Colors.SELECTED.colorize("* item 1") in states[5]
+    assert Colors.SELECTED.colorize("* item 1") in states[6]
 
 
 def test_delete_item() -> None:

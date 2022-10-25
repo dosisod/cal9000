@@ -1,8 +1,11 @@
 from datetime import datetime
+from unittest.mock import patch
 
+from cal9000.config import Colors
+from cal9000.events import MonthlyEvent, WeeklyEvent
+from cal9000.io import DB
 from cal9000.render.calendar import (
     get_calendar_grid,
-    invert_color,
     render_calendar,
     render_calendar_cell,
     render_calendar_month_title,
@@ -32,24 +35,30 @@ def test_render_calendar_title() -> None:
         assert got == title
 
 
-def test_invert_color() -> None:
-    assert invert_color("hello") == "\x1b[7mhello\x1b[0m"
-
-
 def test_render_calendar_cell_empty() -> None:
-    assert render_calendar_cell(0, False) == "  "
+    assert render_calendar_cell(0) == "  "
 
 
 def test_render_calendar_single_digit() -> None:
-    assert render_calendar_cell(1, False) == " 1"
+    assert render_calendar_cell(1) == " 1"
 
 
 def test_render_calendar_double_digit() -> None:
-    assert render_calendar_cell(12, False) == "12"
+    assert render_calendar_cell(12) == "12"
 
 
 def test_render_calendar_when_selected() -> None:
-    assert render_calendar_cell(12, True) == invert_color("12")
+    got = render_calendar_cell(12, Colors.SELECTED)
+    expected = Colors.SELECTED.colorize("12")
+
+    assert got == expected
+
+
+def test_render_calendar_when_item_is_present() -> None:
+    got = render_calendar_cell(12, Colors.HAS_ITEM)
+    expected = Colors.HAS_ITEM.colorize("12")
+
+    assert got == expected
 
 
 def test_get_calendar_grid() -> None:
@@ -63,20 +72,51 @@ def test_get_calendar_grid() -> None:
     ]
 
 
+def colorize_visualizer(self: Colors, text: str) -> str:
+    if self == Colors.SELECTED:
+        return "xx"
+    if self == Colors.HAS_ITEM:
+        return "--"
+
+    return text
+
+
 def test_render_calendar() -> None:
     date = datetime(day=1, month=7, year=2022)
-    got = render_calendar(date)
 
-    _1 = f" {invert_color(' 1')} "
+    with patch("cal9000.config.Colors.colorize", colorize_visualizer):
+        got = render_calendar(date, DB())
 
-    expected = f"""\
+    expected = """\
       July 2022     
 Su Mo Tu We Th Fr Sa
-              {_1} 2
+               xx  2
  3  4  5  6  7  8  9
 10 11 12 13 14 15 16
 17 18 19 20 21 22 23
 24 25 26 27 28 29 30
+31                  """
+
+    assert expected == got
+
+
+def test_render_calendar_with_events_present() -> None:
+    date = datetime(day=1, month=7, year=2022)
+    monthly_event = MonthlyEvent(day=8, title="")
+    weekly_event = WeeklyEvent(weekday=1, title="")
+    db = DB(events=[monthly_event, weekly_event])
+
+    with patch("cal9000.config.Colors.colorize", colorize_visualizer):
+        got = render_calendar(date, db)
+
+    expected = """\
+      July 2022     
+Su Mo Tu We Th Fr Sa
+               xx  2
+ 3 --  5  6  7 --  9
+10 -- 12 13 14 15 16
+17 -- 19 20 21 22 23
+24 -- 26 27 28 29 30
 31                  """
 
     assert expected == got

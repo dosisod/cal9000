@@ -26,7 +26,7 @@ def main(date: datetime, db: DB, keyboard: Keyboard) -> View:
 
     while True:
         with ui_window():
-            calendar = render_calendar(date)
+            calendar = render_calendar(date, db)
 
             if bar := str(cmd_bar):
                 calendar = f"{calendar}\n{bar}"

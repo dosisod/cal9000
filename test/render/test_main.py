@@ -1,9 +1,8 @@
 from datetime import datetime
 from test.render.util import disable_print, keyboard
 
-from cal9000.config import Keys
+from cal9000.config import Colors, Keys
 from cal9000.io import DB
-from cal9000.render.calendar import invert_color
 from cal9000.render.main import main
 
 
@@ -37,9 +36,9 @@ def test_calendar_go_up_then_home() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 3
-    assert invert_color(" 1") in states[0]
-    assert invert_color(" 1") not in states[1]
-    assert invert_color(" 1") in states[2]
+    assert Colors.SELECTED.colorize(" 1") in states[0]
+    assert Colors.SELECTED.colorize(" 1") not in states[1]
+    assert Colors.SELECTED.colorize(" 1") in states[2]
 
 
 def test_calendar_go_left() -> None:
@@ -50,8 +49,8 @@ def test_calendar_go_left() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 2
-    assert invert_color(" 2") in states[0]
-    assert invert_color(" 1") in states[1]
+    assert Colors.SELECTED.colorize(" 2") in states[0]
+    assert Colors.SELECTED.colorize(" 1") in states[1]
 
 
 def test_calendar_go_right() -> None:
@@ -62,8 +61,8 @@ def test_calendar_go_right() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 2
-    assert invert_color(" 1") in states[0]
-    assert invert_color(" 2") in states[1]
+    assert Colors.SELECTED.colorize(" 1") in states[0]
+    assert Colors.SELECTED.colorize(" 2") in states[1]
 
 
 def test_calendar_go_down() -> None:
@@ -74,8 +73,8 @@ def test_calendar_go_down() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 2
-    assert invert_color(" 1") in states[0]
-    assert invert_color(" 8") in states[1]
+    assert Colors.SELECTED.colorize(" 1") in states[0]
+    assert Colors.SELECTED.colorize(" 8") in states[1]
 
 
 def test_calendar_go_up() -> None:
@@ -86,8 +85,8 @@ def test_calendar_go_up() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 2
-    assert invert_color(" 8") in states[0]
-    assert invert_color(" 1") in states[1]
+    assert Colors.SELECTED.colorize(" 8") in states[0]
+    assert Colors.SELECTED.colorize(" 1") in states[1]
 
 
 def test_calendar_go_up_4() -> None:
@@ -98,8 +97,8 @@ def test_calendar_go_up_4() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 2
-    assert invert_color("29") in states[0]
-    assert invert_color(" 1") in states[1]
+    assert Colors.SELECTED.colorize("29") in states[0]
+    assert Colors.SELECTED.colorize(" 1") in states[1]
 
 
 def test_calendar_go_down_4() -> None:
@@ -110,8 +109,8 @@ def test_calendar_go_down_4() -> None:
         states = list(main(date, DB(), kb))
 
     assert len(states) == 2
-    assert invert_color(" 1") in states[0]
-    assert invert_color("29") in states[1]
+    assert Colors.SELECTED.colorize(" 1") in states[0]
+    assert Colors.SELECTED.colorize("29") in states[1]
 
 
 def test_go_to_event_manager() -> None:
@@ -145,7 +144,7 @@ def test_goto_day_command() -> None:
     with disable_print():
         states = list(main(date, DB(), kb))
 
-    assert invert_color("15") in states[-1]
+    assert Colors.SELECTED.colorize("15") in states[-1]
 
 
 def test_apply_verb_count() -> None:
@@ -155,7 +154,7 @@ def test_apply_verb_count() -> None:
     with disable_print():
         states = list(main(date, DB(), kb))
 
-    assert invert_color("10") in states[-1]
+    assert Colors.SELECTED.colorize("10") in states[-1]
 
 
 def test_command_bar_displayed_when_cmd_is_active() -> None:

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from cal9000.dates import WEEK_DAY_NAMES
 
@@ -20,6 +21,9 @@ class Event:
     def __str__(self) -> str:
         return self.title
 
+    def is_on_date(self, date: datetime) -> bool:
+        raise NotImplementedError  # pragma: no cover
+
 
 @dataclass
 class MonthlyEvent(Event):
@@ -30,6 +34,9 @@ class MonthlyEvent(Event):
 
         return f"{self.title} ({self.day}{suffix} of every month)"
 
+    def is_on_date(self, date: datetime) -> bool:
+        return self.day == date.day
+
 
 @dataclass
 class WeeklyEvent(Event):
@@ -39,3 +46,6 @@ class WeeklyEvent(Event):
         weekday = WEEK_DAY_NAMES[self.weekday].title()
 
         return f"{self.title} (every {weekday})"
+
+    def is_on_date(self, date: datetime) -> bool:
+        return self.weekday == (date.isoweekday() % 7)
