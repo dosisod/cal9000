@@ -19,6 +19,37 @@ def render_events(events: list[Event]) -> str:
     return f"Recurring events:\n\n{formatted}"
 
 
+EVENT_HELP_MSG = """
+Events are entered in one of the following forms:
+
+Monthly events:
+
+* N(th) of [every | the] month
+
+Weekly events:
+
+* every WEEKDAY
+* WEEKDAY
+"""
+
+
+def parse_event(description: str, event: str) -> Event | None:
+    match event.lower().split():
+        # TODO: move logic to the event itself
+        case [interval, "of", "every" | "the", "month"]:
+            return MonthlyEvent(description, interval_to_int(interval))
+
+        case ["every", day] | [day]:
+            try:
+                weekday = WEEK_DAY_NAMES.index(day.lower())
+
+                return WeeklyEvent(description, weekday)
+            except ValueError:
+                pass
+
+    return None
+
+
 def recurring_event_manager(db: DB, keyboard: Keyboard) -> View:
     while True:
         with ui_window():
@@ -31,22 +62,19 @@ def recurring_event_manager(db: DB, keyboard: Keyboard) -> View:
 
         if c == Keys.INSERT:
             with ui_window(full_reset=True):
-                event = input("> ")
+                print("Event description")
+                description = input("> ")
 
-            match event.lower().split():
-                # TODO: move logic to the event itself
-                case [interval, "of", "every" | "the", "month", "#", *rest]:
-                    comment = " ".join(rest)
-                    db.events.append(
-                        MonthlyEvent(comment, interval_to_int(interval))
-                    )
+                if not description:
+                    continue
 
-                case ["every", day, "#", *rest] | [day, "#", *rest]:
-                    comment = " ".join(rest)
+                print(EVENT_HELP_MSG)
 
-                    try:
-                        weekday = WEEK_DAY_NAMES.index(day.lower())
+                while True:
+                    format = input("> ")
+                    if not format:
+                        break
 
-                        db.events.append(WeeklyEvent(comment, weekday))
-                    except ValueError:
-                        pass
+                    if event := parse_event(description, format):
+                        db.events.append(event)
+                        break
