@@ -42,6 +42,9 @@ multi_line_output = 3
 include_trailing_comma = true
 color_output = true
 
+[tool.pytest.ini_options]
+addopts = "--cov=cal9000 --cov-report=html --cov-report=term-missing --cov-fail-under=100"
+
 [tool.poetry.scripts]
 cal9000 = "cal9000.__main__:main"
 
