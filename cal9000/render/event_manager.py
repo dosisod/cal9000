@@ -1,4 +1,4 @@
-from cal9000.config import Keys
+from cal9000.config import Colors, Keys
 from cal9000.dates import WEEK_DAY_NAMES
 from cal9000.events import Event, MonthlyEvent, WeeklyEvent
 from cal9000.io import DB, Keyboard
@@ -9,12 +9,22 @@ def interval_to_int(s: str) -> int:
     return int(s[:-2] if s.endswith(("st", "nd", "rd", "th")) else s)
 
 
-def render_events(events: list[Event]) -> str:
+def render_events(events: list[Event], index: int = 0) -> str:
     if len(events) == 0:
         formatted = "No recurring events"
 
     else:
-        formatted = "\n".join(f"* {event}" for event in events)
+        lines: list[str] = []
+
+        for i, event in enumerate(events):
+            line = f"* {event}"
+
+            if i == index:
+                line = Colors.SELECTED.colorize(line)
+
+            lines.append(line)
+
+        formatted = "\n".join(lines)
 
     return f"Recurring events:\n\n{formatted}"
 
@@ -51,16 +61,18 @@ def parse_event(description: str, event: str) -> Event | None:
 
 
 def recurring_event_manager(db: DB, keyboard: Keyboard) -> View:
+    event_index = 0
+
     while True:
         with ui_window():
-            yield render_events(db.events)
+            yield render_events(db.events, event_index)
 
         c = keyboard()
 
         if c == Keys.QUIT:
             break
 
-        if c == Keys.INSERT:
+        elif c == Keys.INSERT:
             with ui_window(full_reset=True):
                 print("Event description")
                 description = input("> ")
@@ -78,3 +90,18 @@ def recurring_event_manager(db: DB, keyboard: Keyboard) -> View:
                     if event := parse_event(description, format):
                         db.events.append(event)
                         break
+
+        elif c == Keys.UP:
+            event_index -= 1
+
+        elif c == Keys.DOWN:
+            event_index += 1
+
+        elif c == Keys.DELETE:
+            db.events.pop(event_index)
+
+            if event_index == len(db.events):
+                event_index -= 1
+
+            if event_index < 0:
+                event_index = 0

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from cal9000.config import Keys
+from cal9000.config import Colors, Keys
 from cal9000.events import MonthlyEvent, WeeklyEvent
 from cal9000.io import DB
 from cal9000.render.event_manager import recurring_event_manager, render_events
@@ -12,10 +12,12 @@ def test_render_events() -> None:
     event = MonthlyEvent(title="some title", day=1)
     got = render_events([event])
 
+    line = Colors.SELECTED.colorize(f"* {event}")
+
     expected = f"""\
 Recurring events:
 
-* {str(event)}"""
+{line}"""
 
     assert got == expected
 
@@ -116,3 +118,47 @@ def test_empty_event_format_will_cause_early_exit() -> None:
     assert len(states) == 2
 
     assert not db.events
+
+
+def test_move_up_and_down_in_event_list() -> None:
+    db = DB(events=[WeeklyEvent("abc", 0), WeeklyEvent("xyz", 1)])
+    kb = keyboard([Keys.DOWN, Keys.UP, Keys.QUIT])
+
+    with disable_print():
+        states = list(recurring_event_manager(db, kb))
+
+    assert len(states) == 3
+
+    assert Colors.SELECTED.colorize(f"* {db.events[0]}") in states[0]
+    assert Colors.SELECTED.colorize(f"* {db.events[1]}") in states[1]
+
+
+def test_delete_event_from_event_list() -> None:
+    event = WeeklyEvent("abc", 0)
+    db = DB(events=[event])
+    kb = keyboard([Keys.DELETE, Keys.QUIT])
+
+    with disable_print():
+        states = list(recurring_event_manager(db, kb))
+
+    assert len(states) == 2
+
+    assert Colors.SELECTED.colorize(f"* {event}") in states[0]
+
+    assert str(event) not in states[1]
+    assert not db.events
+
+
+def test_delete_item_from_end_of_list_decrements_index() -> None:
+    event = WeeklyEvent("abc", 0)
+    db = DB(events=[event, WeeklyEvent("xyz", 1)])
+    kb = keyboard([Keys.DOWN, Keys.DELETE, Keys.QUIT])
+
+    with disable_print():
+        states = list(recurring_event_manager(db, kb))
+
+    assert len(states) == 3
+
+    assert Colors.SELECTED.colorize(f"* {event}") in states[2]
+
+    assert db.events == [event]
