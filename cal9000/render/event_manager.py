@@ -1,6 +1,9 @@
+import calendar
+from contextlib import suppress
+
 from cal9000.config import Colors, Keys
 from cal9000.dates import WEEK_DAY_NAMES
-from cal9000.events import Event, MonthlyEvent, WeeklyEvent
+from cal9000.events import Event, MonthlyEvent, WeeklyEvent, YearlyEvent
 from cal9000.io import DB, Keyboard
 from cal9000.ui import View, ui_window
 
@@ -40,6 +43,10 @@ Weekly events:
 
 * every WEEKDAY
 * WEEKDAY
+
+Yearly events:
+
+* MONTH DAY
 """
 
 
@@ -50,12 +57,18 @@ def parse_event(description: str, event: str) -> Event | None:
             return MonthlyEvent(description, interval_to_int(interval))
 
         case ["every", day] | [day]:
-            try:
+            with suppress(ValueError):
                 weekday = WEEK_DAY_NAMES.index(day.lower())
 
                 return WeeklyEvent(description, weekday)
-            except ValueError:
-                pass
+
+        case [month_name, day]:
+            with suppress(ValueError):
+                return YearlyEvent(
+                    description,
+                    [m.lower() for m in calendar.month_name].index(month_name),
+                    interval_to_int(day),
+                )
 
     return None
 

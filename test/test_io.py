@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pytest import raises
 
-from cal9000.events import Event, MonthlyEvent, WeeklyEvent
+from cal9000.events import Event, MonthlyEvent, WeeklyEvent, YearlyEvent
 from cal9000.io import DB, Items, load_save_file, save_items
 
 
@@ -34,6 +34,7 @@ def test_load_save_file_save_events(tmp_path: str) -> None:
             {
                 "items": {},
                 "events": [
+                    {"title": "some yearly event", "month": 1, "day": 2},
                     {"title": "some monthly event", "day": 1},
                     {"title": "some weekly event", "weekday": 6},
                     {"title": "some normal event"},
@@ -45,6 +46,7 @@ def test_load_save_file_save_events(tmp_path: str) -> None:
     db = load_save_file(str(save_file))
 
     assert db.events == [
+        YearlyEvent(title="some yearly event", month=1, day=2),
         MonthlyEvent(title="some monthly event", day=1),
         WeeklyEvent(title="some weekly event", weekday=6),
         Event(title="some normal event"),

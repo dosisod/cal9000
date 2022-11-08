@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
-from .events import Event, MonthlyEvent, WeeklyEvent
+from .events import Event, MonthlyEvent, WeeklyEvent, YearlyEvent
 
 Keyboard = Callable[[], str]
 Items = defaultdict[str, list[str]]
@@ -37,6 +37,9 @@ def load_save_file(filename: str = DEFAULT_CONFIG_FILE) -> DB:
 
     def convert_event_from_json(event: dict[str, str | int]) -> Event:
         match event:
+            case {"title": str(title), "month": int(month), "day": int(day)}:
+                return YearlyEvent(title, month, day)
+
             case {"title": str(title), "day": int(day)}:
                 return MonthlyEvent(title, day)
 

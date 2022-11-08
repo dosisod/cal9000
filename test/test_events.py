@@ -1,4 +1,12 @@
-from cal9000.events import Event, MonthlyEvent, WeeklyEvent, day_suffix
+from datetime import datetime
+
+from cal9000.events import (
+    Event,
+    MonthlyEvent,
+    WeeklyEvent,
+    YearlyEvent,
+    day_suffix,
+)
 
 
 def test_day_suffixes() -> None:
@@ -60,3 +68,19 @@ def test_create_weekly_event() -> None:
     assert event.title == "something"
     assert event.weekday == 0
     assert str(event) == "something (every Sunday)"
+
+
+def test_create_yearly_event() -> None:
+    event = YearlyEvent(title="something", month=1, day=2)
+
+    assert event.title == "something"
+    assert event.month == 1
+    assert event.day == 2
+    assert str(event) == "something (January 2nd)"
+
+
+def test_yearly_event_is_on_date() -> None:
+    event = YearlyEvent(title="something", month=1, day=2)
+
+    assert event.is_on_date(datetime(year=2022, month=1, day=2))
+    assert event.is_on_date(datetime(year=2023, month=1, day=2))

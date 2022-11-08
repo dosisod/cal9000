@@ -1,3 +1,4 @@
+import calendar
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -49,3 +50,18 @@ class WeeklyEvent(Event):
 
     def is_on_date(self, date: datetime) -> bool:
         return self.weekday == (date.isoweekday() % 7)
+
+
+@dataclass
+class YearlyEvent(Event):
+    month: int
+    day: int
+
+    def __str__(self) -> str:
+        month = calendar.month_name[self.month]
+        day = f"{self.day}{day_suffix(self.day)}"
+
+        return f"{self.title} ({month} {day})"
+
+    def is_on_date(self, date: datetime) -> bool:
+        return self.month == date.month and self.day == date.day

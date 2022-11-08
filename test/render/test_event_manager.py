@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from cal9000.config import Colors, Keys
-from cal9000.events import MonthlyEvent, WeeklyEvent
+from cal9000.events import MonthlyEvent, WeeklyEvent, YearlyEvent
 from cal9000.io import DB
 from cal9000.render.event_manager import recurring_event_manager, render_events
 
@@ -68,6 +68,22 @@ def test_insert_weekly_event() -> None:
     assert "comment" in states[1]
 
     assert db.events == [WeeklyEvent("comment", weekday=0)]
+
+
+def test_insert_yearly_event() -> None:
+    db = DB()
+
+    with disable_print():
+        with patch("builtins.input") as p:
+            p.side_effect = ["comment", "January 1st"]
+
+            kb = keyboard([Keys.INSERT, Keys.QUIT])
+            states = list(recurring_event_manager(db, kb))
+
+    assert len(states) == 2
+    assert "comment" in states[1]
+
+    assert db.events == [YearlyEvent("comment", month=1, day=1)]
 
 
 def test_typing_invalid_event_will_ask_you_again() -> None:
