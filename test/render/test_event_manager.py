@@ -178,3 +178,31 @@ def test_delete_item_from_end_of_list_decrements_index() -> None:
     assert Colors.SELECTED.colorize(f"* {event}") in states[2]
 
     assert db.events == [event]
+
+
+def test_cannot_go_above_topmost_event() -> None:
+    event = WeeklyEvent("abc", 0)
+    db = DB(events=[event])
+    kb = keyboard([Keys.UP, Keys.UP, Keys.UP, Keys.QUIT])
+
+    with disable_print():
+        states = list(recurring_event_manager(db, kb))
+
+    assert len(states) == 4
+
+    for state in states[3:]:
+        assert Colors.SELECTED.colorize(f"* {event}") in state
+
+
+def test_cannot_go_below_lowest_event() -> None:
+    event = WeeklyEvent("abc", 0)
+    db = DB(events=[event])
+    kb = keyboard([Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.QUIT])
+
+    with disable_print():
+        states = list(recurring_event_manager(db, kb))
+
+    assert len(states) == 4
+
+    for state in states[3:]:
+        assert Colors.SELECTED.colorize(f"* {event}") in state

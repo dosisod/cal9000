@@ -113,8 +113,8 @@ def recurring_event_manager(db: DB, keyboard: Keyboard) -> View:
         elif c == Keys.DELETE:
             db.events.pop(event_index)
 
-            if event_index == len(db.events):
-                event_index -= 1
+        if event_index == len(db.events):
+            event_index -= 1
 
-            if event_index < 0:
-                event_index = 0
+        if event_index < 0:
+            event_index = 0
