@@ -14,7 +14,7 @@ def interval_to_int(s: str) -> int:
 
 def render_events(events: list[Event], index: int = 0) -> str:
     if len(events) == 0:
-        formatted = "No recurring events"
+        formatted = f"No recurring events\n\nPress `{Keys.INSERT}` to add event"  # noqa: E501
 
     else:
         lines: list[str] = []

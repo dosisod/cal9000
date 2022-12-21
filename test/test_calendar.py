@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from cal9000.config import Colors
 from cal9000.events import MonthlyEvent, WeeklyEvent
-from cal9000.io import DB
+from cal9000.io import DB, Items
 from cal9000.render.calendar import (
     get_calendar_grid,
     render_calendar,
@@ -118,5 +118,26 @@ Su Mo Tu We Th Fr Sa
 17 -- 19 20 21 22 23
 24 -- 26 27 28 29 30
 31                  """
+
+    assert expected == got
+
+
+def test_render_calendar_when_daily_item_present() -> None:
+    selected_date = datetime(month=12, day=20, year=2022)
+    item_date = datetime(month=12, day=19, year=2022)
+    items = {item_date.strftime("%s"): ["item 1", "item 2"]}
+    db = DB(items=Items(list, items))
+
+    with patch("cal9000.config.Colors.colorize", colorize_visualizer):
+        got = render_calendar(selected_date, db)
+
+    expected = """\
+    December 2022   
+Su Mo Tu We Th Fr Sa
+             1  2  3
+ 4  5  6  7  8  9 10
+11 12 13 14 15 16 17
+18 -- xx 21 22 23 24
+25 26 27 28 29 30 31"""
 
     assert expected == got

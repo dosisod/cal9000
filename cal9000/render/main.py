@@ -1,3 +1,4 @@
+from calendar import monthrange
 from datetime import datetime, timedelta
 
 from ..command_bar import CommandBar
@@ -43,7 +44,9 @@ def main(date: datetime, db: DB, keyboard: Keyboard) -> View:
                 break
 
             elif (day := cmd_bar.command[1:]).isdigit():
-                date = date.replace(day=int(day))
+                max_day = monthrange(date.year, date.month)[1]
+
+                date = date.replace(day=max(1, min(int(day), max_day)))
 
         elif cmd_bar.append(c):
             continue

@@ -25,7 +25,12 @@ Recurring events:
 def test_render_events_with_no_events() -> None:
     got = render_events([])
 
-    expected = "Recurring events:\n\nNo recurring events"
+    expected = """\
+Recurring events:
+
+No recurring events
+
+Press `i` to add event"""
 
     assert got == expected
 

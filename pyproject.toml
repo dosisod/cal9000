@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cal9000"
-version = "0.1.0"
+version = "0.2.0"
 description = "Vim enabled version of cal(1)"
 authors = ["dosisod"]
 license = "GPL-3.0-only"

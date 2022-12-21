@@ -40,23 +40,27 @@ def render_calendar(date: datetime, db: DB) -> str:
             case MonthlyEvent(day=day):
                 days.add(day)
 
-    for row in get_calendar_grid(date):
-        cols = []
+    for week in get_calendar_grid(date):
+        cells = []
 
-        for col in row:
+        for day in week:
             color = None
 
-            if col == date.day:
+            if day == date.day:
                 color = Colors.SELECTED
 
-            elif col:
-                tmp = date.replace(day=col)
+            elif day:
+                cell_date = date.replace(day=day)
 
-                if tmp.day in days or (tmp.isoweekday() % 7) in weekdays:
+                if (
+                    cell_date.day in days
+                    or (cell_date.isoweekday() % 7) in weekdays
+                    or db.items.get(cell_date.strftime("%s"))
+                ):
                     color = Colors.HAS_ITEM
 
-            cols.append(render_calendar_cell(col, color))
+            cells.append(render_calendar_cell(day, color))
 
-        lines.append(" ".join(cols))
+        lines.append(" ".join(cells))
 
     return "\n".join(lines)

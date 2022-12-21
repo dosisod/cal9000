@@ -32,7 +32,7 @@ def render_items_for_day(db: DB, date: datetime, index: int) -> str:
         )
 
     if len(items) == 0:
-        out.append("nothing for today")
+        out.append(f"nothing for today\n\nPress `{Keys.INSERT}` to add item")
 
     return "\n".join(out)
 
@@ -55,8 +55,8 @@ def items_for_day(db: DB, date: datetime, keyboard: Keyboard) -> View:
             break
 
         if c == Keys.INSERT:
-            item = prompt_for_new_item()
-            db.items[date.strftime("%s")].append(item)
+            if item := prompt_for_new_item():
+                db.items[date.strftime("%s")].append(item)
 
         elif c == Keys.UP:
             if index > 0:

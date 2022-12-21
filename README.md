@@ -17,7 +17,35 @@ $ cal9000
 
 ## Usage
 
-Press `?` to view help.
+In short, the following Vim keybindings are supported:
+
+| Key(s)     | Action |
+|------------|--------|
+| `q`        | Quit |
+| `h`        | Go to previous day |
+| `j`        | Go to next week |
+| `J`        | Go 4 weeks forward |
+| `k`        | Go to last week |
+| `K`        | Go 4 weeks back |
+| `l`        | Go to next day |
+| `u`        | Go to to today |
+| `i`        | Insert an item/event |
+| `x`        | Delete an event or item |
+| `g`        | Open event manager |
+| `o`        | Open the selected day |
+| `?`        | Open help menu |
+| `:command` | Run the command `command`, see below for supported commands |
+| *count*`verb` | Run `verb` (`h`/`j`/`k`/`l`, etc) `count` times |
+
+## Commands
+
+Currently supported commands are:
+
+| Command       | Description |
+|---------------|-------------|
+| `h` or `help` | Open help dialog |
+| `q` or `quit` | Quit cal9000 |
+| *number*      | Go to day *number* of the current month |
 
 ## Configuration
 

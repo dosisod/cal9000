@@ -15,7 +15,9 @@ def test_render_items_for_day_when_there_are_no_items() -> None:
     expected = """\
 July 1, 2022:
 
-nothing for today"""
+nothing for today
+
+Press `i` to add item"""
 
     assert expected == got
 
@@ -74,6 +76,18 @@ def test_insert_item_into_day() -> None:
 
     assert item not in states[0]
     assert item in states[1]
+
+
+def test_insert_empty_item_into_day_is_ignored() -> None:
+    kb = keyboard([Keys.INSERT, Keys.QUIT])
+    db = DB(items=Items(list))
+
+    with disable_print():
+        with patch("builtins.input", lambda _: ""):
+            states = list(items_for_day(db, datetime.now(), kb))
+
+    assert len(states) == 2
+    assert not db.items
 
 
 def test_move_up_and_down_in_item_list() -> None:

@@ -147,6 +147,26 @@ def test_goto_day_command() -> None:
     assert Colors.SELECTED.colorize("15") in states[-1]
 
 
+def test_goto_day_too_low_clamps_to_first_of_month() -> None:
+    date = datetime(month=12, day=20, year=2022)
+    kb = keyboard(command("0") + [Keys.QUIT])
+
+    with disable_print():
+        states = list(main(date, DB(), kb))
+
+    assert Colors.SELECTED.colorize(" 1") in states[-1]
+
+
+def test_goto_day_too_high_clamps_to_last_day_of_month() -> None:
+    date = datetime(month=12, day=20, year=2022)
+    kb = keyboard(command("999") + [Keys.QUIT])
+
+    with disable_print():
+        states = list(main(date, DB(), kb))
+
+    assert Colors.SELECTED.colorize("31") in states[-1]
+
+
 def test_apply_verb_count() -> None:
     date = datetime(month=10, day=14, year=2022)
     kb = keyboard(list("4h\n") + [Keys.QUIT])
