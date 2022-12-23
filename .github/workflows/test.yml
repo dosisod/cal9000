@@ -1,10 +1,21 @@
 name: tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
 
 jobs:
   tests:
     runs-on: ubuntu-latest
+
+    env:
+      FORCE_COLOR: 1
+      TERM: xterm-color
+      MYPY_FORCE_COLOR: 1
+      MYPY_FORCE_TERMINAL_WIDTH: 200
+      PYTEST_ADDOPTS: --color=yes
 
     steps:
       - uses: actions/checkout@v2
