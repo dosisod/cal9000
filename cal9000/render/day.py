@@ -31,7 +31,7 @@ def render_items_for_day(db: DB, date: datetime, index: int) -> str:
             else bullet_point
         )
 
-    if len(items) == 0:
+    if not items:
         out.append(f"nothing for today\n\nPress `{Keys.INSERT}` to add item")
 
     return "\n".join(out)
@@ -69,7 +69,7 @@ def items_for_day(db: DB, date: datetime, keyboard: Keyboard) -> View:
         elif c == Keys.DELETE:
             daily_items = db.items[date.strftime("%s")]
 
-            if len(daily_items) == 0:
+            if not daily_items:
                 continue
 
             all_items = get_items_for_day(db, date)

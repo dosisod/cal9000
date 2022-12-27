@@ -35,3 +35,6 @@ jobs:
 
       - name: Mypy
         run: make mypy
+
+      - name: Refurb
+        run: make refurb

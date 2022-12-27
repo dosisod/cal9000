@@ -1,6 +1,6 @@
 .PHONY: test mypy pytest black
 
-all: lint mypy test
+all: lint mypy test refurb
 
 install:
 	pip install -r dev-requirements.txt
@@ -22,3 +22,6 @@ mypy:
 
 test:
 	pytest
+
+refurb:
+	refurb cal9000 test
