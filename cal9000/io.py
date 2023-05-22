@@ -61,4 +61,4 @@ def load_save_file(filename: str = DEFAULT_CONFIG_FILE) -> DB:
 
 def save_items(db: DB, filename: str = DEFAULT_CONFIG_FILE) -> None:
     with Path(filename).expanduser().open("w+") as f:
-        f.write(json.dumps(db.to_json()))
+        f.write(json.dumps(db.to_json(), separators=(",", ":")))

@@ -18,7 +18,7 @@ def test_load_save_file_doesnt_exist_will_return_empty_store() -> None:
 def test_load_save_file_loads_file_correctly_if_exists(tmp_path: str) -> None:
     save_file = Path(tmp_path) / "file.json"
     save_file.write_text(
-        r'{"items":{"123456":["item 1", "item 2", "item 3"]},"events":[]}'
+        r'{"items":{"123456":["item 1","item 2","item 3"]},"events":[]}'
     )
 
     db = load_save_file(str(save_file))
@@ -75,4 +75,4 @@ def test_save_items(tmp_path: str) -> None:
     save_items(db, str(save_file))
 
     assert save_file.exists()
-    assert save_file.read_text() == json.dumps(db.to_json())
+    assert json.loads(save_file.read_text()) == db.to_json()
