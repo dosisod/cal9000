@@ -1,8 +1,9 @@
 import json
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .events import Event, MonthlyEvent, WeeklyEvent, YearlyEvent
 

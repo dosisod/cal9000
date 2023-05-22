@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from pytest import raises
+import pytest
 
 from cal9000.events import Event, MonthlyEvent, WeeklyEvent, YearlyEvent
 from cal9000.io import DB, Items, load_save_file, save_items
@@ -59,7 +59,7 @@ def test_load_save_file_fails_on_invalid_event(tmp_path: str) -> None:
         json.dumps({"items": {}, "events": [{"invalid": "data"}]})
     )
 
-    with raises(ValueError, match="invalid event"):
+    with pytest.raises(ValueError, match="invalid event"):
         load_save_file(str(save_file))
 
 

@@ -5,10 +5,10 @@ all: lint mypy test refurb
 install:
 	pip install -r dev-requirements.txt
 
-lint: flake8 black isort
+lint: ruff black isort
 
-flake8:
-	flake8
+ruff:
+	ruff cal9000 test
 
 black:
 	black cal9000 test -l 79 --check --diff --color

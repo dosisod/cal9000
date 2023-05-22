@@ -1,6 +1,7 @@
 import termios
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 __old_flags: list[Any]  # type: ignore
 __flags: list[Any]  # type: ignore
@@ -66,7 +67,7 @@ def ensure_n_lines_below(lines: int) -> None:
 
 
 @contextmanager
-def ui_window(full_reset: bool = False) -> Generator[None, None, None]:
+def ui_window(*, full_reset: bool = False) -> Generator[None, None, None]:
     clear_line_and_below()
 
     if full_reset:

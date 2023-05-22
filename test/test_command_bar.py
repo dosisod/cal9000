@@ -99,7 +99,7 @@ def test_escape_cancels_search() -> None:
 
     assert cmd_bar.append(ESCAPE)
 
-    assert cmd_bar.search == ""
+    assert not cmd_bar.search
 
 
 def test_cannot_move_from_count_to_escape_or_command() -> None:
@@ -164,4 +164,4 @@ def test_reset() -> None:
 
 
 def test_zero_width_bar_displays_nothing() -> None:
-    assert str(CommandBar()) == ""
+    assert not str(CommandBar())

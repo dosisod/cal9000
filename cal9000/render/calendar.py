@@ -10,9 +10,8 @@ DAYS_OF_WEEK_HEADER = "Su Mo Tu We Th Fr Sa"
 
 def render_calendar_month_title(date: datetime) -> str:
     title = date.strftime("%B %Y")
-    centered = f" {title:^19}"
 
-    return centered
+    return f" {title:^19}"
 
 
 def render_calendar_cell(day: int, color: Colors | None = None) -> str:

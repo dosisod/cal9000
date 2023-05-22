@@ -129,7 +129,7 @@ def command(cmd: str) -> list[str]:
 
 def test_help_command() -> None:
     for cmd in ("help", "h"):
-        kb = keyboard(command(cmd) + ["\n", Keys.QUIT])
+        kb = keyboard([*command(cmd), "\n", Keys.QUIT])
 
         with disable_print():
             states = list(main(datetime.now(), DB(), kb))
@@ -139,7 +139,7 @@ def test_help_command() -> None:
 
 def test_goto_day_command() -> None:
     date = datetime(month=10, day=14, year=2022)
-    kb = keyboard(command("15") + [Keys.QUIT])
+    kb = keyboard([*command("15"), Keys.QUIT])
 
     with disable_print():
         states = list(main(date, DB(), kb))
@@ -149,7 +149,7 @@ def test_goto_day_command() -> None:
 
 def test_goto_day_too_low_clamps_to_first_of_month() -> None:
     date = datetime(month=12, day=20, year=2022)
-    kb = keyboard(command("0") + [Keys.QUIT])
+    kb = keyboard([*command("0"), Keys.QUIT])
 
     with disable_print():
         states = list(main(date, DB(), kb))
@@ -159,7 +159,7 @@ def test_goto_day_too_low_clamps_to_first_of_month() -> None:
 
 def test_goto_day_too_high_clamps_to_last_day_of_month() -> None:
     date = datetime(month=12, day=20, year=2022)
-    kb = keyboard(command("999") + [Keys.QUIT])
+    kb = keyboard([*command("999"), Keys.QUIT])
 
     with disable_print():
         states = list(main(date, DB(), kb))
@@ -169,7 +169,7 @@ def test_goto_day_too_high_clamps_to_last_day_of_month() -> None:
 
 def test_apply_verb_count() -> None:
     date = datetime(month=10, day=14, year=2022)
-    kb = keyboard(list("4h\n") + [Keys.QUIT])
+    kb = keyboard([*list("4h\n"), Keys.QUIT])
 
     with disable_print():
         states = list(main(date, DB(), kb))
@@ -178,7 +178,7 @@ def test_apply_verb_count() -> None:
 
 
 def test_command_bar_displayed_when_cmd_is_active() -> None:
-    kb = keyboard(command("xyz") + [Keys.QUIT])
+    kb = keyboard([*command("xyz"), Keys.QUIT])
 
     with disable_print():
         states = list(main(datetime.now(), DB(), kb))
