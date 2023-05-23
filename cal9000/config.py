@@ -15,6 +15,7 @@ class Keys:
     OPEN = "o"
     DELETE = "x"
     GOTO_EVENTS = "g"
+    COMPLETE = " "
 
 
 class Colors(Enum):

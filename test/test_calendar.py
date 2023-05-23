@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from cal9000.config import Colors
 from cal9000.events import MonthlyEvent, WeeklyEvent
-from cal9000.io import DB, Items
+from cal9000.io import DB, Item, Items
 from cal9000.render.calendar import (
     get_calendar_grid,
     render_calendar,
@@ -125,7 +125,7 @@ Su Mo Tu We Th Fr Sa
 def test_render_calendar_when_daily_item_present() -> None:
     selected_date = datetime(month=12, day=20, year=2022)
     item_date = datetime(month=12, day=19, year=2022)
-    items = {item_date.strftime("%s"): ["item 1", "item 2"]}
+    items = {item_date.strftime("%s"): [Item("item 1"), Item("item 2")]}
     db = DB(items=Items(list, items))
 
     with patch("cal9000.config.Colors.colorize", colorize_visualizer):

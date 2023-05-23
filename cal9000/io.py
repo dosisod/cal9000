@@ -8,7 +8,18 @@ from typing import Any
 from .events import Event, MonthlyEvent, WeeklyEvent, YearlyEvent
 
 Keyboard = Callable[[], str]
-Items = defaultdict[str, list[str]]
+
+
+@dataclass
+class Item:
+    data: str
+    complete: bool = False
+
+    def __str__(self) -> str:
+        return self.data
+
+
+Items = defaultdict[str, list[Item]]
 
 DEFAULT_CONFIG_FILE = "~/.local/share/cal9000.json"
 
@@ -20,7 +31,9 @@ class DB:
 
     def to_json(self) -> dict[str, Any]:  # type: ignore
         return {
-            "items": dict(self.items),
+            "items": {
+                k: [asdict(i) for i in v] for k, v in self.items.items()
+            },
             "events": [asdict(e) for e in self.events],
         }
 
@@ -53,8 +66,24 @@ def load_save_file(filename: str = DEFAULT_CONFIG_FILE) -> DB:
             case _:
                 raise ValueError("invalid event")
 
+    def convert_items_from_json(item: str | dict[str, str | bool]) -> Item:
+        match item:
+            case str(data):
+                return Item(data)
+
+            case {"complete": bool(done), "data": str(data)}:
+                return Item(data, done)
+
+        raise ValueError("invalid item")  # pragma: no cover
+
     return DB(
-        items=Items(list, items),
+        items=Items(
+            list,
+            {
+                k: [convert_items_from_json(item) for item in v]
+                for k, v in items.items()
+            },
+        ),
         events=[convert_event_from_json(e) for e in events],
     )
 

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from cal9000.events import Event, MonthlyEvent, WeeklyEvent, YearlyEvent
-from cal9000.io import DB, Items, load_save_file, save_items
+from cal9000.io import DB, Item, Items, load_save_file, save_items
 
 
 def test_load_save_file_doesnt_exist_will_return_empty_store() -> None:
@@ -20,11 +20,31 @@ def test_load_save_file_loads_file_correctly_if_exists(tmp_path: str) -> None:
     save_file.write_text(
         r'{"items":{"123456":["item 1","item 2","item 3"]},"events":[]}'
     )
+    save_file.write_text(
+        json.dumps(
+            {
+                "items": {
+                    "123456": [
+                        "item 1",
+                        {"data": "item 2", "complete": False},
+                        {"data": "item 3", "complete": True},
+                    ],
+                },
+                "events": [],
+            }
+        )
+    )
 
     db = load_save_file(str(save_file))
 
     assert isinstance(db.items, defaultdict)
-    assert db.items == {"123456": ["item 1", "item 2", "item 3"]}
+    assert db.items == {
+        "123456": [
+            Item("item 1"),
+            Item("item 2"),
+            Item("item 3", complete=True),
+        ]
+    }
 
 
 def test_load_save_file_save_events(tmp_path: str) -> None:
@@ -66,7 +86,7 @@ def test_load_save_file_fails_on_invalid_event(tmp_path: str) -> None:
 def test_save_items(tmp_path: str) -> None:
     save_file = Path(tmp_path) / "file.json"
 
-    items = {"123": ["item 1"]}
+    items = {"123": [Item("item 1")]}
     events = [Event("something")]
     db = DB(items=Items(list, items), events=events)
 

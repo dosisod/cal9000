@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from cal9000.config import Colors, Keys
 from cal9000.events import MonthlyEvent, WeeklyEvent
-from cal9000.io import DB, Items
+from cal9000.io import DB, Item, Items
 from cal9000.render.day import items_for_day, render_items_for_day
 
 from .util import disable_print, keyboard
@@ -24,15 +24,15 @@ Press `i` to add item"""
 
 def test_render_items_for_day() -> None:
     date = datetime(month=7, day=1, year=2022)
-    items = {date.strftime("%s"): ["item 1", "item 2"]}
+    items = {date.strftime("%s"): [Item("item 1"), Item("item 2")]}
 
     got = render_items_for_day(DB(items=Items(list, items)), date, 0)
 
     expected = f"""\
 July 1, 2022:
 
-{Colors.SELECTED.colorize('* item 1')}
-* item 2"""
+{Colors.SELECTED.colorize('[ ] item 1')}
+[ ] item 2"""
 
     assert expected == got
 
@@ -95,7 +95,9 @@ def test_move_up_and_down_in_item_list() -> None:
         [Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.UP, Keys.UP, Keys.UP, Keys.QUIT]
     )
     date = datetime.now()
-    items = {date.strftime("%s"): ["item 1", "item 2", "item 3"]}
+    items = {
+        date.strftime("%s"): [Item("item 1"), Item("item 2"), Item("item 3")]
+    }
 
     with disable_print():
         db = DB(items=Items(list, items))
@@ -103,19 +105,19 @@ def test_move_up_and_down_in_item_list() -> None:
 
     assert len(states) == 7
 
-    assert Colors.SELECTED.colorize("* item 1") in states[0]
-    assert Colors.SELECTED.colorize("* item 2") in states[1]
-    assert Colors.SELECTED.colorize("* item 3") in states[2]
-    assert Colors.SELECTED.colorize("* item 3") in states[3]
-    assert Colors.SELECTED.colorize("* item 2") in states[4]
-    assert Colors.SELECTED.colorize("* item 1") in states[5]
-    assert Colors.SELECTED.colorize("* item 1") in states[6]
+    assert Colors.SELECTED.colorize("[ ] item 1") in states[0]
+    assert Colors.SELECTED.colorize("[ ] item 2") in states[1]
+    assert Colors.SELECTED.colorize("[ ] item 3") in states[2]
+    assert Colors.SELECTED.colorize("[ ] item 3") in states[3]
+    assert Colors.SELECTED.colorize("[ ] item 2") in states[4]
+    assert Colors.SELECTED.colorize("[ ] item 1") in states[5]
+    assert Colors.SELECTED.colorize("[ ] item 1") in states[6]
 
 
 def test_delete_item() -> None:
     kb = keyboard([Keys.DELETE, Keys.QUIT])
     date = datetime.now()
-    items = {date.strftime("%s"): ["item 1"]}
+    items = {date.strftime("%s"): [Item("item 1")]}
 
     with disable_print():
         db = DB(items=Items(list, items))
@@ -123,8 +125,8 @@ def test_delete_item() -> None:
 
     assert len(states) == 2
 
-    assert "* item 1" in states[0]
-    assert "* item 1" not in states[1]
+    assert "[ ] item 1" in states[0]
+    assert "[ ] item 1" not in states[1]
 
     assert len(items[date.strftime("%s")]) == 0
 
@@ -132,7 +134,7 @@ def test_delete_item() -> None:
 def test_delete_item_when_there_are_no_more_items_does_nothing() -> None:
     kb = keyboard([Keys.DELETE, Keys.QUIT])
     date = datetime.now()
-    items: dict[str, list[str]] = {date.strftime("%s"): []}
+    items: dict[str, list[Item]] = {date.strftime("%s"): []}
 
     with disable_print():
         states = list(items_for_day(DB(items=Items(list, items)), date, kb))
@@ -144,13 +146,25 @@ def test_delete_item_when_there_are_no_more_items_does_nothing() -> None:
 def test_delete_last_item_moves_to_next_item() -> None:
     kb = keyboard([Keys.DOWN, Keys.DELETE, Keys.QUIT])
     date = datetime.now()
-    items: dict[str, list[str]] = {date.strftime("%s"): ["x", "y"]}
+    items = {date.strftime("%s"): [Item("x"), Item("y")]}
 
     with disable_print():
         states = list(items_for_day(DB(items=Items(list, items)), date, kb))
 
     assert len(states) == 3
-    assert items[date.strftime("%s")] == ["x"]
+    assert items[date.strftime("%s")] == [Item("x")]
+
+
+def test_mark_item_as_complete() -> None:
+    kb = keyboard([Keys.COMPLETE, Keys.QUIT])
+    date = datetime.now()
+    items = {date.strftime("%s"): [Item("item")]}
+
+    with disable_print():
+        states = list(items_for_day(DB(items=Items(list, items)), date, kb))
+
+    assert len(states) == 2
+    assert items[date.strftime("%s")] == [Item("item", complete=True)]
 
 
 def test_items_are_added_if_monthly_event_lands_on_today() -> None:
