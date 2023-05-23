@@ -1,0 +1,16 @@
+on git.push where event.branch is "master"
+
+# Pip Install
+make install
+
+# Pytest
+make test
+
+# Lint
+make lint
+
+# Mypy
+make mypy
+
+# Refurb
+make refurb
