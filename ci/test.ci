@@ -1,6 +1,6 @@
 on git.push where event.branch is "master"
 
-run_on image alpine:latest
+run_on image python:3.11.3-alpine3.18
 
 shell apk add make
 
