@@ -1,5 +1,9 @@
 on git.push where event.branch is "master"
 
+run_on image alpine:latest
+
+shell apk add make
+
 # Pip Install
 make install
 
