@@ -13,13 +13,6 @@ classifiers = [
   "Typing :: Typed"
 ]
 
-[tool.poetry.dev-dependencies]
-black = "22.10.0"
-flake8 = "5.0.4"
-isort = "5.10.1"
-mypy = "0.991"
-pytest = "7.2.0"
-
 [tool.coverage.run]
 # TODO: enable this
 # branch = true
@@ -46,13 +39,15 @@ color_output = true
 addopts = "--cov=cal9000 --cov-report=html --cov-report=term-missing --cov-fail-under=100"
 
 [tool.ruff]
+target-version = "py310"
 line-length = 79
 
-select = ["ALL"]
+lint.select = ["ALL"]
 
-extend-ignore = [
+lint.extend-ignore = [
   "A001", "A002", "A003",
   "ANN101",
+  "B011",
   "C901",
   "COM812",
   "D100", "D101", "D102", "D103", "D104", "D105", "D107", "D200", "D202", "D203",
@@ -60,6 +55,7 @@ extend-ignore = [
   "D415", "D416",
   "DTZ001", "DTZ005", "DTZ006",
   "EM101", "EM102",
+  "FIX002",
   "N801",
   "PGH003",
   "PLR0912", "PLR2004",
@@ -73,7 +69,7 @@ extend-ignore = [
   "TRY003", "TRY004",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "test/test_calendar.py" = ["W291"]
 
 [tool.poetry.scripts]

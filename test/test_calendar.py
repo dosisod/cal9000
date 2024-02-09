@@ -1,6 +1,8 @@
 from datetime import datetime
 from unittest.mock import patch
 
+import pytest
+
 from cal9000.config import Colors
 from cal9000.events import MonthlyEvent, WeeklyEvent
 from cal9000.io import DB, Item, Items
@@ -72,13 +74,13 @@ def test_get_calendar_grid() -> None:
     ]
 
 
-def colorize_visualizer(self: Colors, text: str) -> str:
+def colorize_visualizer(self: Colors, _: str) -> str:
     if self == Colors.SELECTED:
         return "xx"
     if self == Colors.HAS_ITEM:
         return "--"
 
-    return text
+    pytest.fail("unreachable")
 
 
 def test_render_calendar() -> None:

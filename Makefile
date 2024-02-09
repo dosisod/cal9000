@@ -25,3 +25,6 @@ test:
 
 refurb:
 	refurb cal9000 test
+
+clean:
+	rm -rf .mypy_cache .ruff_cache .pytest_cache
